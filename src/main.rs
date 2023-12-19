@@ -79,7 +79,7 @@ fn main() {
 
     if limit_rate {
         let _ = execute_wget(&url, &ratelimit);
-        return
+        return;
     }
 
     if multiurl {
@@ -193,7 +193,7 @@ fn download_file(
 
         let mut downloaded = 0;
         let mut buffer = [0; 1024];
-        let mut rate_down = 0;
+        //let mut rate_down = 0;
         loop {
             let bytes_read = response.read(&mut buffer)?;
             if bytes_read == 0 {
@@ -201,12 +201,16 @@ fn download_file(
             }
             dest_file.write_all(&buffer[..bytes_read])?;
             downloaded += bytes_read as u64;
-            rate_down += bytes_read as u64;
-            if rate_down > 700 * 1024 {
-                pb.set_position(downloaded);
-                sleep(Duration::from_secs(1));
-                rate_down = 0;
-            }
+            pb.set_position(downloaded);
+
+            //rate limit experiment
+
+            // rate_down += bytes_read as u64;
+            // if rate_down > 10 * 1024 * 1024 {
+            //     pb.set_position(downloaded);
+            //     sleep(Duration::from_secs(1));
+            //     rate_down = 0;
+            // }
         }
 
         //pb.finish_with_message("File downloaded successfully!");
